@@ -67,9 +67,12 @@ else:
 
 
 def download(url, sha1):
-    """Download a file and verify its hash"""
+    """Download a file (if not present in directory) and verify its hash"""
     LOG.debug('download {}'.format(url))
-    r = _urlopen(url)
+    if os.path.isfile(os.path.basename(url)):
+        r = open(os.path.basename(url))
+    else:
+        r = _urlopen(url)
     byte_content = r.read()
     download_sha1 = hashlib.sha1(byte_content).hexdigest()
     if download_sha1 != sha1:
