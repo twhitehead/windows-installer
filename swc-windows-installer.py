@@ -41,6 +41,7 @@ try:  # Python 3
     from urllib.request import urlopen as _urlopen
 except ImportError:  # Python 2
     from urllib2 import urlopen as _urlopen
+    FileNotFoundError = IOError
 import zipfile
 
 
@@ -69,9 +70,9 @@ else:
 def download(url, sha1):
     """Download a file (if not present in directory) and verify its hash"""
     LOG.debug('download {}'.format(url))
-    if os.path.isfile(os.path.basename(url)):
-        r = open(os.path.basename(url))
-    else:
+    try:
+        r = open(url.split('/')[-1])
+    except FileNotFoundError:
         r = _urlopen(url)
     byte_content = r.read()
     download_sha1 = hashlib.sha1(byte_content).hexdigest()
